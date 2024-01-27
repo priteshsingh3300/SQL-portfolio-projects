@@ -73,18 +73,14 @@ on CD.location = CV.location
 -- Looking at total vaccinations and total population
 
 select CD.continent, CD.location, CD.date, CD.population, CV.new_vaccinations, 
-
 -- we want to get the total new vaccinations in particular country
 	sum(cast(CV.new_vaccinations as Int)) 
 	over(partition by CD.location -- order by CD.location, CV.new_vaccinations) --> order  by is not possible because max byte limit is 900
 	)as total_new_vacc,
 
 -- we want to get percentage population got vaccinated recently as compare to population
-
---(total_new_vacc/CD.population)*100 --> alias can't be used as coloumn immediately after it made so we will use CTE
-
---please see next query to get an idea
-
+-- (total_new_vacc/CD.population)*100 --> alias can't be used as coloumn immediately after it made so we will use CTE
+-- please see next query to get an idea
 from Portfolio_project_covid.dbo.CovidDeaths CD
 inner join Portfolio_project_covid.dbo.CovidVaccinations CV
 	on CD.location = CV.location
@@ -92,6 +88,7 @@ inner join Portfolio_project_covid.dbo.CovidVaccinations CV
 where CD.continent is not null
 order by 1,2,3
 
+	
 -- CTE 
 
 with NewVacvsPop (continent, location, date, population, new_vaccinations, total_new_vacc)
@@ -137,7 +134,6 @@ inner join Portfolio_project_covid.dbo.CovidVaccinations CV
 	and CD.date = CV.date
 where CD.continent is not null
 order by 1,2,3 
-
 
 select *, (total_new_vacc/population)*100 as vacc_percentWpop
 from #NewVacvsPop
